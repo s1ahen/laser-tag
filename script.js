@@ -1,18 +1,14 @@
 function updateGameMode() {
     const gameMode = document.getElementById('gameMode').value;
     const teamSizeInput = document.getElementById('teamSizeInput');
-    const vipInput = document.getElementById('vipInput');
     const hostageInput = document.getElementById('hostageInput');
 
     // Hide all extra inputs initially
     teamSizeInput.style.display = 'none';
-    vipInput.style.display = 'none';
     hostageInput.style.display = 'none';
 
     if (gameMode === 'teamBattle') {
         teamSizeInput.style.display = 'block';
-    } else if (gameMode === 'protectVIP') {
-        vipInput.style.display = 'block';
     } else if (gameMode === 'rescueMission') {
         hostageInput.style.display = 'block';
     }
@@ -100,18 +96,15 @@ function generateTeams() {
             return;
         }
 
-        const vipName = document.getElementById('vip').value.trim();
-        if (!vipName || !playerNames.includes(vipName)) {
-            alert('Please enter a valid VIP name that is among the players.');
-            return;
-        }
-
-        const remainingPlayers = playerNames.filter(name => name !== vipName);
-        const shuffledPlayers = remainingPlayers.sort(() => Math.random() - 0.5);
+        const shuffledPlayers = playerNames.sort(() => Math.random() - 0.5);
+        const vipIndex = Math.floor(Math.random() * shuffledPlayers.length);
+        const vipName = shuffledPlayers.splice(vipIndex, 1)[0]; // Remove VIP from player list
+        const guards = shuffledPlayers.slice(0, 2);
+        const assassin = shuffledPlayers[2];
 
         const teamDiv = document.createElement('div');
         teamDiv.classList.add('team');
-        teamDiv.innerHTML = `<h2>VIP: ${vipName}</h2><h3>Guards</h3><ul>${shuffledPlayers.slice(0, 2).map(player => `<li>${player}</li>`).join('')}</ul><h3>Assassin</h3><ul><li>${shuffledPlayers[2]}</li></ul>`;
+        teamDiv.innerHTML = `<h2>VIP: ${vipName}</h2><h3>Guards</h3><ul>${guards.map(player => `<li>${player}</li>`).join('')}</ul><h3>Assassin</h3><ul><li>${assassin}</li></ul>`;
         teamDisplay.appendChild(teamDiv);
 
     } else if (gameMode === 'rescueMission') {
